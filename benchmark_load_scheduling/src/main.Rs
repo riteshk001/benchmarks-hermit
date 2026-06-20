@@ -1,30 +1,51 @@
 use std::time::Duration;
-use std::thread::sleep;
 use fork::{fork, Fork};
 use crate::utils::{task_work};
 mod utils;
 
-const LENGHT: i64 = 256;
-const BLOCKING_T: i32 = 2; // s ?
+
+
 const CORE: usize = 8;
 
 
 fn main() {
     let nb_tasks = CORE * 2; // or more ?
-    let (total_time,blocked_time) = scenario_short_task(nb_tasks);
+
+    let lenght_short:i64 = 256;
+    let blocking_time_short = Duration::from_millis(0);
+
+    let lenght_long:i64 = 512;
+    let blocking_time_long: Duration = Duration::from_millis(600); 
+    
+    // -- Short tasks scenario -- //
+    
+    let (total_time,blocked_time) = scenario_task(nb_tasks,lenght_short,blocking_time_short);
     let pourc_waiting = ((blocked_time.as_secs_f64() / total_time.as_secs_f64()) * 100.0) as u32;
 
-    println!("-- Running scheduler benchmark --");
-    println!("LENGHT: {}    BLOCKING_T: {}      CORE: {}", LENGHT, BLOCKING_T,CORE);
+    println!("-- Running scheduler benchmark (SHORT tasks scenario) --");
+    println!("LENGHT: {}    BLOCKING_T: {:?}      CORE: {}", lenght_short, blocking_time_short, CORE);
     println!("NB of tasks: {}",nb_tasks);
     println!("Total time : {:?} s", total_time);
     println!("Blocking Time due to scheduling : {:?}",blocked_time);
     println!("Porcentage of blocking time: {:2}%",pourc_waiting);
 
+    //--Long tasks scenario -- //
+
+    let (total_time_l,blocked_time_l) = scenario_task(nb_tasks,lenght_long,blocking_time_long);
+    let pourc_waiting_l = ((blocked_time_l.as_secs_f64() / total_time_l.as_secs_f64()) * 100.0) as u32;
+
+    println!("-- Running scheduler benchmark (LONG tasks scenario) --");
+    println!("LENGHT: {}    BLOCKING_T: {:?}      CORE: {}", lenght_long, blocking_time_long,CORE);
+    println!("NB of tasks: {}",nb_tasks);
+    println!("Total time : {:?} s", total_time_l);
+    println!("Blocking Time due to scheduling : {:?}",blocked_time_l);
+    println!("Porcentage of blocking time: {:2}%",pourc_waiting_l);
+
+
 }
 
 
-fn scenario_short_task(nb_task: usize) -> (Duration,Duration) {
+fn scenario_task(nb_task: usize, lenght: i64, blocking_time: Duration) -> (Duration,Duration) {
 
     //we are going to mesure first how long a short task takes without any contention:
     let start_init = std::time::Instant::now();
@@ -34,7 +55,7 @@ fn scenario_short_task(nb_task: usize) -> (Duration,Duration) {
             }
             Ok(Fork::Child) => {
                 
-                task_work(LENGHT, Duration::from_millis(0));
+                task_work(lenght, blocking_time);
                 std::process::exit(0);
             }
             Err(e) => {
@@ -44,7 +65,7 @@ fn scenario_short_task(nb_task: usize) -> (Duration,Duration) {
     // when the child has finished
     let task_alone_t = start_init.elapsed();
 
-    // now we do the real test
+    // now we do the real test with multiple tasks
     let mut pids = Vec::new();
     let start = std::time::Instant::now();
     
@@ -56,7 +77,7 @@ fn scenario_short_task(nb_task: usize) -> (Duration,Duration) {
             }
             Ok(Fork::Child) => {
                 
-                task_work(LENGHT, Duration::from_millis(0));
+                task_work(lenght, blocking_time);
                 std::process::exit(0);
             }
             Err(e) => {
@@ -72,7 +93,7 @@ fn scenario_short_task(nb_task: usize) -> (Duration,Duration) {
 
     // analysing part
     let total_time = start.elapsed();
-    let ideal_time = task_alone_t;
+    let ideal_time = task_alone_t + blocking_time;
     let blocked_time = match total_time.checked_sub(ideal_time) { 
         Some(diff) => diff,
         None => {
@@ -88,4 +109,3 @@ fn scenario_short_task(nb_task: usize) -> (Duration,Duration) {
 
     (total_time,blocked_time)
 }
-
