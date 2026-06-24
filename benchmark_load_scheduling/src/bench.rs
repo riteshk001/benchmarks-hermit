@@ -66,7 +66,7 @@ fn main() {
                 io_time_ms: io_time,
                 io_time_short_ms: 0,
                 cores: CORE,
-                total_time_ms: total_time.as_millis(),
+                total_time_ms: total_time.as_micros(),
                 waiting_time: waiting,
                 execution_time: execution,
                 response_time: response,
@@ -92,7 +92,7 @@ fn main() {
                 io_time_ms: io_time,
                 io_time_short_ms: 0,
                 cores: CORE,
-                total_time_ms: total_time.as_millis(),
+                total_time_ms: total_time.as_micros(),
                 waiting_time: waiting,
                 execution_time: execution,
                 response_time: response,
@@ -124,7 +124,7 @@ fn scenario_mix(
         let creation_time = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
-            .as_millis() as u64;
+            .as_micros() as u64;
         
         let mut fds: [c_int; 2] = [0; 2];
         unsafe { assert_eq!(libc_pipe(fds.as_mut_ptr()), 0); }
@@ -141,7 +141,7 @@ fn scenario_mix(
                 let start_work_time = SystemTime::now()
                     .duration_since(UNIX_EPOCH)
                     .unwrap()
-                    .as_millis() as u64;
+                    .as_micros() as u64;
 
                 if i % 2 == 0 {
                     task_work(length_short, blocking_time_s);
@@ -152,7 +152,7 @@ fn scenario_mix(
                 let end_work_time = SystemTime::now()
                     .duration_since(UNIX_EPOCH)
                     .unwrap()
-                    .as_millis() as u64;
+                    .as_micros() as u64;
 
                 let waiting_time = start_work_time - creation_time;
                 let execution_time = end_work_time - start_work_time;
@@ -224,7 +224,7 @@ fn scenario_task(
         let creation_time = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
-            .as_millis() as u64;
+            .as_micros() as u64;
 
         let mut fds: [c_int; 2] = [0; 2];
         unsafe { assert_eq!(libc_pipe(fds.as_mut_ptr()), 0); }
@@ -241,14 +241,14 @@ fn scenario_task(
                 let start_work_time = SystemTime::now()
                     .duration_since(UNIX_EPOCH)
                     .unwrap()
-                    .as_millis() as u64;
+                    .as_micros() as u64;
 
                 task_work(length, blocking_time);
 
                 let end_work_time = SystemTime::now()
                     .duration_since(UNIX_EPOCH)
                     .unwrap()
-                    .as_millis() as u64;
+                    .as_micros() as u64;
 
                 let waiting_time = start_work_time - creation_time;
                 let execution_time = end_work_time - start_work_time;

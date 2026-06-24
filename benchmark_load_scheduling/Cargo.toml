@@ -8,6 +8,15 @@ fork = "0.7.0"
 libc = "0.2"
 nix = { version = "0.31", features = ["process"] }
 humantime = "2.1"
+rand = { version = "0.8", features = ["std_rng"] } 
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+plotters = { version = "0.3", default-features = false, features = ["svg_backend", "line_series", "point_series"] }
+
+[[bin]]
+name = "bench"
+path = "src/bench.rs"
+
 
 [features]
 default=[]
