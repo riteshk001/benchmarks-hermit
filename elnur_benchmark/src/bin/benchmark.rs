@@ -6,7 +6,7 @@ use std::sync::{
 use std::thread;
 use std::time::{Duration, Instant};
 
-use crate::types10::{
+use crate::types::{
     QueueSnapshot, RunSummary, Scenario, Task, TaskResult, TimeStats, STEAL_LOWER_BOUNDARY,
     STEAL_THRESHOLD, TASKS_COUNT, WORKERS,
 };
