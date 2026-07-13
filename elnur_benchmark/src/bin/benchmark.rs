@@ -10,7 +10,7 @@ use crate::types::{
     QueueSnapshot, RunSummary, Scenario, Task, TaskResult, TimeStats, STEAL_LOWER_BOUNDARY,
     STEAL_THRESHOLD, TASKS_COUNT, WORKERS,
 };
-use crate::workload10::do_work;
+use crate::workload::do_work;
 
 fn run_task(
     run_id: usize,

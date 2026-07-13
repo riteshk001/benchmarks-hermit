@@ -1,6 +1,6 @@
 use std::fs;
 
-use crate::types10::{
+use crate::types::{
     QueueSnapshot, RunSummary, TaskResult, STEAL_LOWER_BOUNDARY, STEAL_THRESHOLD, TASKS_COUNT,
     WORKERS,
 };
