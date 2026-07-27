@@ -1,3 +1,10 @@
 [submodule "kernel"]
 	path = kernel
 	url = git@github.com:hermit-os/kernel.git
+
+; [submodule "hermit-load-calc"]
+;     path = boot-image
+;     url = git@github.com:riteshk001/hermit-load-calc.git
+[submodule "hermit-load-calc"]
+	path = hermit-load-calc
+	url = git@github.com:riteshk001/hermit-load-calc.git
