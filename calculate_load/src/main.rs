@@ -12,24 +12,25 @@ const EXP_5: f64 = 0.983471454;
 const EXP_15: f64 = 0.994459811;
 
 // Variables for hermit kernel. To be tested later 
-// enum TaskStatus {
-//     Invalid,
-//     Ready,
-//     Running,
-//     Finished,
-//     Idle,
-// }
-//
-// struct Priority(u8);
-// type CoreId = u32;
-//
-// struct Task {
-//     id: TaskId, 
-//     status: TaskStatus,
-//     prio: Priority,
-//     core_id: CoreId,
-//     // stacks: TaskStacks,
-// }
+enum TaskStatus {
+    Invalid,
+    Ready,
+    Running,
+    Finished,
+    Idle,
+}
+
+struct Priority(u8);
+type CoreId = u32;
+
+struct Task {
+    id: TaskId, 
+    status: TaskStatus,
+    prio: Priority,
+    core_id: CoreId,
+    // stacks: TaskStacks,
+}
+
 #[derive(Default, Clone)]
 struct LoadAvg {
     avg_1_fixed: FixedU32<U23>,
@@ -110,7 +111,8 @@ fn main() {
     let mut exp_1_fixed: FixedU32<U23> = FixedU32::from_num(EXP_1);
     let mut exp_5_fixed: FixedU32<U23> = FixedU32::from_num(EXP_5);
     let mut exp_15_fixed: FixedU32<U23> = FixedU32::from_num(EXP_15);
-    let mut per_cpu_load: Vec<LoadAvg> = vec![LoadAvg::default(); return_no_cores() as usize];
+    // let mut per_cpu_load: Vec<LoadAvg> = vec![LoadAvg::default(); return_no_cores() as usize];
+    let mut per_cpu_load: Vec<LoadAvg> = vec![LoadAvg::new(); return_no_cores() as usize];
 
     loop {
         // thread::sleep(Duration::from_secs(5));
