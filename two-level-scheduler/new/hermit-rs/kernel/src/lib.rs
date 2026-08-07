@@ -274,12 +274,10 @@ fn boot_processor_main() -> ! {
 	interrupts::enable();
 
 	kernel::boot_next_processor();
-
+ // initialize the global queues based on the nb of cores
+	scheduler::global_queue::init_global_queues(kernel::get_processor_count() as usize);
 	#[cfg(feature = "smp")]
 	synch_all_cores();
- // initialize the global queues based on the nb of cores
-	//scheduler::global_queue::init_global_queues(kernel::get_processor_count() as usize);
-
 	if kernel::is_uhyve_with_pci() || !env::is_uhyve() {
 		#[cfg(feature = "pci")]
 		drivers::pci::print_information();

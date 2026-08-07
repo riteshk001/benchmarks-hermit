@@ -1,4 +1,3 @@
-// new version with global queue
 #![allow(clippy::type_complexity)]
 
 use alloc::boxed::Box;
@@ -270,9 +269,16 @@ impl PerCoreScheduler {
     	NO_TASKS.fetch_add(1, Ordering::SeqCst);
 
 		
-		let queue_index = global_queue::select_queue_for_enqueue();
+		let queue_index = global_queue::select_queue_for_enqueue(&mut core_scheduler().rng);
 		// Push the new task to the global queue
 		global_queue::global_queue_push(queue_index, new_task);  
+
+	#[cfg(feature = "smp")]
+    { // wake up all the cores in sleep
+        for target_core in 0..get_processor_count() {
+            arch::wakeup_core(target_core);
+        }
+    }
 
 		tid
 	}
@@ -671,7 +677,8 @@ impl PerCoreScheduler {
 	/// available.
 	pub fn run() -> ! {
 		let backoff = Backoff::new();
-
+		let core_id = core_id();
+	
 		loop {
 			let core_scheduler = core_scheduler();
 			interrupts::disable();
